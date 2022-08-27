@@ -4,9 +4,9 @@ https://img.shields.io/static/v1?label=Knotters&message=Project&color=1657ce&lin
 
 # Mdisk Downloader Bot
 
-A Telegram MDisk Video Downloader Bot, You can watch Videos without MX player (bypass mdisk requirements)
+*A Telegram MDisk Video Downloader Bot, You can watch Videos without MX player (bypass mdisk requirements)*
 
-inspired from https://github.com/death-angel-141/Mdisk-Downloader
+*Inspired from https://github.com/death-angel-141/Mdisk-Downloader*
 
 ---
 
@@ -22,12 +22,16 @@ inspired from https://github.com/death-angel-141/Mdisk-Downloader
 
 ```
 /mdisk mdisklink
+/thumb - reply to a image document of size less than 200KB to set it as Thumbnail
+( you can also send image as a photo to set it as Thumbnail automatically )
+/remove - remove Thumbnail
+/show - show Thumbnail
 ```
 ---
 
 # Deploy
 
-You can use the bot locally by running 'main.py' or deploy using Procfile, Dokerfile, docker-compose.yml
+*You can use the bot locally by either running* **main.py** or deploy using **Procfile** or **Dokerfile** or **docker-compose.yml**
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/D6ueVa?referralCode=_4oAwx)
 

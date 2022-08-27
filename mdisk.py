@@ -41,7 +41,11 @@ def mdow(link,message):
 
     # resp capturing
     URL = f'https://diskuploader.entertainvideo.com/v1/file/cdnurl?param={cid}'
-    resp = requests.get(url=URL, headers=header).json()['source']
+    try:
+        resp = requests.get(url=URL, headers=header).json()['source']
+    except:
+        shutil.rmtree(str(message.id))
+        return None,None,None
     result = subprocess.run([ytdlp, '--no-warning', '-k', '--user-agent','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36', '--allow-unplayable-formats', '-F', resp], capture_output=True, text=True)
     with open(f"{message.id}.txt","w") as temp:
         temp.write(result.stdout)
@@ -81,21 +85,30 @@ def mdow(link,message):
     print("Video Downloaded")
     # renaming
     output = requests.get(url=URL, headers=header).json()['filename']
+    filename = output
     output = output.replace(".mkv", "").replace(".mp4", "")
-    
+    output = "".join( x for x in output if (x.isalnum() or x in "._-@ "))
+
+    # check if normal video
+    if len(audids) == 0:
+        foutput = f"{output}.mkv"
+        os.rename(input_video,foutput)
+        shutil.rmtree(str(message.id))
+        return foutput,0,filename
+
     # merge
     audi.join()
     cmd = f'{ffmpeg} -i "{input_video}" '
 
-    len = 0
+    leng = 0
     for ele in audids:
         out_audio = input_audio + f'/aud-{ele}.m4a'
         cmd = cmd + f'-i "{out_audio}" '
-        len = len + 1
+        leng = leng + 1
     
     cmd = cmd + "-map 0 "
     i = 1
-    while(i<=len):
+    while(i<=leng):
         cmd = cmd + f"-map {i} "
         i = i + 1
 
@@ -114,7 +127,7 @@ def mdow(link,message):
         print('Cleaning Leftovers...')
         shutil.rmtree(str(message.id))
         foutput = f"{output}.mkv"
-        return foutput
+        return foutput,1,filename
 
     else:
         print("Trying with Changes")
@@ -127,11 +140,32 @@ def mdow(link,message):
             print('Cleaning Leftovers...')
             
             shutil.rmtree(str(message.id))
-            return ffoutput
+            return ffoutput,1,filename
     
-# threding audio download      
+# multi-threding audio download      
 def downaud(input_audio,audids,resp):
-    for ele in audids:
+	threadlist = []
+	for i in range(len(audids)):
+		threadlist.append(threading.Thread(target=lambda:downaudio(input_audio,audids[i],resp),daemon=True))
+		threadlist[i].start()   
+       	
+	for ele in threadlist:
+		ele.join()   	
+       	 
+# actual audio download      
+def downaudio(input_audio,ele,resp):             
         out_audio = input_audio + f'/aud-{ele}.m4a'
         subprocess.run([ytdlp, '--no-warning', '-k', '-f', ele, resp, '-o', out_audio, '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36',
                    '--allow-unplayable-formats', '--external-downloader', aria2c, '--external-downloader-args', '-x 16 -s 16 -k 1M'])
+
+# getting size
+def getsize(link):
+    inp = link
+    fxl = inp.split("/")
+    cid = fxl[-1]
+    URL = f'https://diskuploader.entertainvideo.com/v1/file/cdnurl?param={cid}'
+    try:
+        size = requests.get(url=URL, headers=header).json()["size"]
+        return size
+    except:
+        return 0
