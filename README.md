@@ -4,9 +4,7 @@ https://img.shields.io/static/v1?label=Knotters&message=Project&color=1657ce&lin
 
 # Mdisk Downloader Bot
 
-*A Telegram MDisk Video Downloader Bot, You can watch Videos without MX player (bypass mdisk requirements)*
-
-*Inspired from https://github.com/death-angel-141/Mdisk-Downloader*
+*A Telegram MDisk Video Downloader Bot, You can watch downloaded Videos without MX player (bypass mdisk requirements)*
 
 ---
 

@@ -6,6 +6,7 @@ import time
 import pyrogram
 from pyrogram import Client
 from pyrogram import filters
+from pyrogram.types import InlineKeyboardMarkup,InlineKeyboardButton
 
 import mdisk
 import extras
@@ -24,8 +25,8 @@ app = Client("my_bot",api_id=api_id, api_hash=api_hash,bot_token=bot_token)
 # start command
 @app.on_message(filters.command(["start"]))
 def echo(client: pyrogram.client.Client, message: pyrogram.types.messages_and_media.message.Message):
-    app.send_message(message.chat.id, '**Send link like this >> __/mdisk link__**',reply_to_message_id=message.id)
-
+    app.send_message(message.chat.id, '**Hi, I am Mdisk Video Downloader, you can watch Videos without MX Player.\n__Send me a link to Start...__**',reply_to_message_id=message.id,
+    reply_markup=InlineKeyboardMarkup([[ InlineKeyboardButton("📦 Source Code", url="https://github.com/bipinkrish/Mdisk-Downloader-Bot")]]))
 
 # help command
 @app.on_message(filters.command(["help"]))
@@ -229,15 +230,27 @@ def change(client: pyrogram.client.Client, message: pyrogram.types.messages_and_
     else:
         app.send_message(message.chat.id, '__Mode changed from **Document** format to **Video** format__',reply_to_message_id=message.id)
 
+        
+# multiple links handler
+def multilinks(message,links):
+    for link in links:
+        d = threading.Thread(target=lambda:down(message,link),daemon=True)
+        d.start()
+        d.join()
+
 
 # mdisk link in text
 @app.on_message(filters.text)
 def mdisktext(client: pyrogram.client.Client, message: pyrogram.types.messages_and_media.message.Message):
     
     if "https://mdisk.me/" in message.text:
-        link = message.text    
-        d = threading.Thread(target=lambda:down(message,link),daemon=True)
-        d.start()
+        links = message.text.split("\n")
+        if len(links) == 1:
+            d = threading.Thread(target=lambda:down(message,links[0]),daemon=True)
+            d.start()
+        else:
+            d = threading.Thread(target=lambda:multilinks(message,links),daemon=True)
+            d.start()   
     else:
         app.send_message(message.chat.id, '**Send only __MDisk Link__**',reply_to_message_id=message.id)
 
