@@ -14,6 +14,11 @@ https://img.shields.io/static/v1?label=Knotters&message=Project&color=1657ce&lin
 - `ID` Your API ID from my.telegram.org
 - `TOKEN` Your bot token from @BotFather
 
+### Optionals ( if it's empty then everyone can use the bot )
+
+- `AUTH` List of Authenticated User's ID seperated by comma (,)
+- `BAN` List of Banned User's ID seperated by comma (,)
+
 ---
 
 # Usage
